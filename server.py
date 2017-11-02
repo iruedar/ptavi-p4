@@ -17,6 +17,7 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     def handle(self):
 
         lista = []
+        client = {'address':'', 'expires':''}
         IP = self.client_address[0]
         PORT = self.client_address[1]
         address = IP + ':' + str(PORT)
@@ -28,10 +29,10 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
         if method == 'REGISTER':
             user = message[1].split(':')[1]
             message = lista[1].split()
-            expires = message[1].split('\r\n')[0]
-            client = {'address' : address, 'expires' : expires}
-            
-        if int(expires) == 0:
+            sec = message[1].split('\r\n')[0]
+            expires = time.time() + int(sec)
+            expired = 
+        if int(sec) == 0:
             try:
                 del self.dicc[user]
                 print('User', user, 'in', address, 'deleted\n')
@@ -52,4 +53,6 @@ if __name__ == "__main__":
     try:
         serv.serve_forever()
     except KeyboardInterrupt:
-        print("Finalizado servidor")
+	print("Finalizado servidor")
+
+esto es una prueba
