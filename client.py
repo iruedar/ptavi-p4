@@ -6,8 +6,11 @@ Programa cliente UDP que abre un socket a un servidor
 import sys
 import socket
 
-
+"""Se establece el texto que aparecerá en el caso de un usage error"""
 USAGE = 'client.py ip port register sip_address expires_value'
+
+"""Se extrae de los comandos introducidos en la ejecución los datos
+necesarios para la comunicacion con el servidor"""
 try:
     SERVER = sys.argv[1]
     PORT = int(sys.argv[2])
@@ -19,13 +22,11 @@ try:
 except IndexError:
     sys.exit('Usage: ' + USAGE)
 
-
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
     my_socket.connect((SERVER, PORT))
     print('Enviando: ' + REGISTERSIP + EXPIRESSIP)
     my_socket.send(bytes(REGISTERSIP + EXPIRESSIP, 'utf-8'))
     data = my_socket.recv(1024)
     print('Recibido -- ', data.decode('utf-8'))
-
 
 print("Socket terminado.")

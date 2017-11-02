@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+"""Servidor de eco en UDP simple con handle de registro."""
+
 import sys
 import json
 import socketserver
@@ -9,9 +11,12 @@ from datetime import datetime, date, time, timedelta
 
 
 class SIPRegisterHandler(socketserver.DatagramRequestHandler):
+    """SIP Register and save users in .json file."""
+
     dicc = {}
 
     def json2registered(self):
+        """Ver si registered.json existe."""
         try:
             with open('registered.json', 'r') as json_file:
                 self.dicc = json.load(json_file)
@@ -19,13 +24,13 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
             pass
 
     def register2json(self):
+        """Crea registered.json file."""
         with open('registered.json', 'w') as json_file:
             json.dump(self.dicc, json_file, indent=3)
 
     def handle(self):
-
         lista = []
-        client = {'address':'', 'expires':''}
+        client = {'address': '', 'expires': ''}
         IP = self.client_address[0]
         PORT = self.client_address[1]
         FORMAT = '%Y-%m-%d %H:%M:%S'
@@ -35,6 +40,7 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
 
         message = lista[0].split()
         method = message[0].split()[0]
+        """Se comprueba que el primer campo sea REGISTER."""
         if method == 'REGISTER':
             user = message[1].split(':')[1]
             message = lista[1].split()
@@ -64,13 +70,14 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
             self.register2json()
 
 if __name__ == "__main__":
+    try:
+        LISTEN_PORT = int(sys.argv[1])
+    except IndexError:
+        sys.exit('Usage: server.py puerto')
+    serv = socketserver.UDPServer(('', LISTEN_PORT), SIPRegisterHandler)
+    print('Lanzando servidor UDP de eco...\n')
 
-	LISTEN_PORT = int(sys.argv[1])
-	serv = socketserver.UDPServer(('', LISTEN_PORT), SIPRegisterHandler)
-	print('Lanzando servidor UDP de eco...\n')
-
-	try:
-		serv.serve_forever()
-	except KeyboardInterrupt:
-		print("Finalizado servidor")
-
+    try:
+        serv.serve_forever()
+    except KeyboardInterrupt:
+        print("Finalizado servidor")
