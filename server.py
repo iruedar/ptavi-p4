@@ -11,6 +11,13 @@ from datetime import datetime, date, time, timedelta
 class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     dicc = {}
 
+    def json2registered(self):
+        try:
+            with open('registered.json', 'r') as json_file:
+                self.dicc = json.load(json_file)
+        except:
+            pass
+
     def register2json(self):
         with open('registered.json', 'w') as json_file:
             json.dump(self.dicc, json_file, indent=3)
